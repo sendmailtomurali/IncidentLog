@@ -19,6 +19,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITableViewDe
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        //Krishnan: Location Update settings
         self.locationManager.delegate = self
         self.locationManager.requestAlwaysAuthorization()
         self.locationManager.startMonitoringSignificantLocationChanges()
@@ -39,6 +40,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITableViewDe
             var Msg = Date_time + ", " + Loc_Lat + ", " + Loc_Lon
             print (Msg)
             IncidentController.addIncident(newIncident: Msg)
+            //Krishnan: This is needed for refresh
             tableView.reloadData()
         }
     }
@@ -65,10 +67,12 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITableViewDe
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         cell.textLabel?.text = IncidentController.Incident[indexPath.row]
+        //Krishnan:This is needed for message to show in multiple lines
         cell.textLabel?.numberOfLines = 0
         return cell
     }
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        //Set the header text
         return "Log Summary"
     }
 }
