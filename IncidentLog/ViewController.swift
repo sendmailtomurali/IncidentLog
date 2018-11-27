@@ -16,7 +16,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITableViewDe
     let locDefaults = UserDefaults.standard
     let locationManager:CLLocationManager = CLLocationManager()
     let motionActivityManager = CMMotionActivityManager()
-
+    
     @IBOutlet weak var tableView: UITableView!
     
     override func viewDidLoad() {
@@ -32,6 +32,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITableViewDe
         self.locationManager.startMonitoringSignificantLocationChanges()
         self.locationManager.allowsBackgroundLocationUpdates = true
         self.locationManager.pausesLocationUpdatesAutomatically = false
+    
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -43,22 +44,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITableViewDe
             let Loc_Lat = String(format: "%.6f",currentLocation.coordinate.latitude)
             let Loc_Lon = String(format: "%.6f",currentLocation.coordinate.longitude)
             print("\(index): \(currentLocation)")
-            var Msg = Date_time + ", " + Loc_Lat + ", " + Loc_Lon
-            
-            if CMMotionActivityManager.isActivityAvailable() {
-                motionActivityManager.startActivityUpdates(to: OperationQueue.main) { (motion) in
-                    print("inside activity update true")
-                    Msg += (motion?.automotive)! ? "Yes Driving\n" : "Not Driving\n"
-                    Msg += (motion?.cycling)! ? "Yes Cycling\n" : "Not Cycling\n"
-                    Msg += (motion?.walking)! ? "Yes Walking\n" : "Not Walking\n"
-                    Msg += (motion?.running)! ? "Yes running\n" : "Not running\n"
-                    Msg += (motion?.stationary)! ? "Yes stationary\n" : "Not stationary\n"
-                    Msg += (motion?.unknown)! ? "Yes unknown\n" : "Not unknown\n"
-                }
-            }
-            else{
-                print("inside activity update false")
-            }
+            let Act = Activity_Det()
+            let Msg = Date_time + ", " + Loc_Lat + ", " + Loc_Lon + "," + Act
             print (Msg)
             Notif(msgbody: "Update Received")
             IncidentController.addIncident(newIncident: Msg)
@@ -113,4 +100,40 @@ func Notif(msgbody: String){
     //Krishnan: Configure the request - combination of content and trigger
     let request = UNNotificationRequest(identifier: "Possible Incidents", content: content, trigger: trigger)
     UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
+}
+
+func Activity_Det() -> String{
+    var stationaryLabel = "Initial"
+    var walkingLabel = "Initial"
+    var runningLabel = "Initial"
+    var automotiveLabel = "Initial"
+    var cyclingLabel = "Initial"
+    var unknownLabel = "Initial"
+    var startDateLabel = "Initial"
+    var confidenceLabel = "Initial"
+    
+    let motionActivityManager = CMMotionActivityManager()
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+    if CMMotionActivityManager.isActivityAvailable() {
+        motionActivityManager.startActivityUpdates(to: OperationQueue.main) { (motion) in
+            var stationaryLabel = (motion?.stationary)! ? "True" : "False"
+            var walkingLabel = (motion?.walking)! ? "True" : "False"
+            var runningLabel = (motion?.running)! ? "True" : "False"
+            var automotiveLabel = (motion?.automotive)! ? "True" : "False"
+            var cyclingLabel = (motion?.cycling)! ? "True" : "False"
+            var unknownLabel = (motion?.unknown)! ? "True" : "False"
+            
+            var startDateLabel = dateFormatter.string(from: (motion?.startDate)!)
+            
+            if motion?.confidence == CMMotionActivityConfidence.low {
+                var confidenceLabel = "Low"
+            } else if motion?.confidence == CMMotionActivityConfidence.medium {
+                var confidenceLabel = "Good"
+            } else if motion?.confidence == CMMotionActivityConfidence.high {
+                var confidenceLabel = "High"
+            }
+        }
+    }
+    return(automotiveLabel)
 }
