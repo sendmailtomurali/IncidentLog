@@ -24,6 +24,8 @@
 	<string>To check if user has displaced significant location</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>To check if user is in motion</string>
+	<key>NSMotionUsageDescription</key>
+	<string>Check the driving action</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>location</string>

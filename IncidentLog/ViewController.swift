@@ -9,11 +9,13 @@
 import UIKit
 import CoreLocation
 import UserNotifications
+import CoreMotion
 
 class ViewController: UIViewController, CLLocationManagerDelegate, UITableViewDelegate, UITableViewDataSource {
     
     let locDefaults = UserDefaults.standard
     let locationManager:CLLocationManager = CLLocationManager()
+    let motionActivityManager = CMMotionActivityManager()
 
     @IBOutlet weak var tableView: UITableView!
     
@@ -41,7 +43,21 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITableViewDe
             let Loc_Lat = String(format: "%.6f",currentLocation.coordinate.latitude)
             let Loc_Lon = String(format: "%.6f",currentLocation.coordinate.longitude)
             print("\(index): \(currentLocation)")
-            let Msg = Date_time + ", " + Loc_Lat + ", " + Loc_Lon
+            var Msg = Date_time + ", " + Loc_Lat + ", " + Loc_Lon
+            
+            if CMMotionActivityManager.isActivityAvailable() {
+                motionActivityManager.startActivityUpdates(to: OperationQueue.main) { (motion) in
+                    print("inside activity update true")
+                    Msg += (motion?.automotive)! ? "Yes Driving\n" : "Not Driving\n"
+                    Msg += (motion?.cycling)! ? "Yes Cycling\n" : "Not Cycling\n"
+                    Msg += (motion?.running)! ? "Yes running\n" : "Not running\n"
+                    Msg += (motion?.stationary)! ? "Yes stationary\n" : "Not stationary\n"
+                    Msg += (motion?.unknown)! ? "Yes unknown\n" : "Not unknown\n"
+                }
+            }
+            else{
+                print("inside activity update false")
+            }
             print (Msg)
             Notif(msgbody: "Update Received")
             IncidentController.addIncident(newIncident: Msg)
