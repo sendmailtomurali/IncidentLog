@@ -50,6 +50,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITableViewDe
                     print("inside activity update true")
                     Msg += (motion?.automotive)! ? "Yes Driving\n" : "Not Driving\n"
                     Msg += (motion?.cycling)! ? "Yes Cycling\n" : "Not Cycling\n"
+                    Msg += (motion?.walking)! ? "Yes Walking\n" : "Not Walking\n"
                     Msg += (motion?.running)! ? "Yes running\n" : "Not running\n"
                     Msg += (motion?.stationary)! ? "Yes stationary\n" : "Not stationary\n"
                     Msg += (motion?.unknown)! ? "Yes unknown\n" : "Not unknown\n"
