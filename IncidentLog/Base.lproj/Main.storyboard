@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="tne-QT-ifu">
+            <objects>
+                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="IncidentLog" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8dc-M2-SKI">
+                                <rect key="frame" x="221" y="44" width="90" height="30"/>
+                                <state key="normal" title="New Incident"/>
+                                <connections>
+                                    <segue destination="MRy-24-7c5" kind="show" id="olX-8c-9Jq"/>
+                                </connections>
+                            </button>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="zz6-Om-cWl">
+                                <rect key="frame" x="0.0" y="102" width="375" height="565"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="cell" id="qNX-RX-xvW">
+                                        <rect key="frame" x="0.0" y="28" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="qNX-RX-xvW" id="XJz-bj-5hb">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </prototypes>
+                                <connections>
+                                    <outlet property="dataSource" destination="BYZ-38-t0r" id="9hC-7g-nnw"/>
+                                    <outlet property="delegate" destination="BYZ-38-t0r" id="Zbs-wl-11O"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="8dc-M2-SKI" firstAttribute="leading" secondItem="zz6-Om-cWl" secondAttribute="trailing" constant="-154" id="CaL-5E-8fb"/>
+                            <constraint firstItem="zz6-Om-cWl" firstAttribute="top" secondItem="8dc-M2-SKI" secondAttribute="bottom" constant="28" id="Mgs-R3-c9c"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="zz6-Om-cWl" secondAttribute="bottom" id="jo1-Lm-3am"/>
+                            <constraint firstItem="8dc-M2-SKI" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="24" id="kz9-hS-eDK"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="8dc-M2-SKI" secondAttribute="trailing" constant="64" id="qza-ef-NYT"/>
+                            <constraint firstItem="zz6-Om-cWl" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="wBs-XE-fPs"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
+                    </view>
+                    <connections>
+                        <outlet property="tableView" destination="zz6-Om-cWl" id="zjW-hc-iri"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="136.80000000000001" y="133.5832083958021"/>
+        </scene>
+        <!--Incident Log View Controller-->
+        <scene sceneID="CV7-ev-wrJ">
+            <objects>
+                <viewController id="MRy-24-7c5" customClass="IncidentLogViewController" customModule="IncidentLog" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="P3x-Fr-Oh5">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Add a New Incident" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="CyB-Sw-Gxr">
+                                <rect key="frame" x="58" y="94" width="272" height="30"/>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yuX-1v-poC">
+                                <rect key="frame" x="216" y="147" width="92" height="30"/>
+                                <state key="normal" title="Save Incident"/>
+                                <connections>
+                                    <action selector="saveIncident:" destination="MRy-24-7c5" eventType="touchUpInside" id="tOU-Pj-hIK"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="CyB-Sw-Gxr" firstAttribute="top" secondItem="2ZT-Pw-t0f" secondAttribute="top" constant="74" id="4Pf-wT-Kur"/>
+                            <constraint firstItem="CyB-Sw-Gxr" firstAttribute="leading" secondItem="2ZT-Pw-t0f" secondAttribute="leading" constant="58" id="Rcs-Z1-phq"/>
+                            <constraint firstItem="2ZT-Pw-t0f" firstAttribute="trailing" secondItem="yuX-1v-poC" secondAttribute="trailing" constant="67" id="jKS-Fa-Ad6"/>
+                            <constraint firstItem="2ZT-Pw-t0f" firstAttribute="trailing" secondItem="CyB-Sw-Gxr" secondAttribute="trailing" constant="45" id="o9S-sa-Ypb"/>
+                            <constraint firstItem="yuX-1v-poC" firstAttribute="leading" secondItem="2ZT-Pw-t0f" secondAttribute="leading" constant="216" id="xQg-NG-K8F"/>
+                            <constraint firstItem="yuX-1v-poC" firstAttribute="top" secondItem="CyB-Sw-Gxr" secondAttribute="bottom" constant="23" id="ysc-cD-X3X"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="2ZT-Pw-t0f"/>
+                    </view>
+                    <connections>
+                        <outlet property="textField" destination="CyB-Sw-Gxr" id="0B0-Gg-1cd"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="cVJ-8g-lJ5" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="866" y="134"/>
+        </scene>
+    </scenes>
+</document>
