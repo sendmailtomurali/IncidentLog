@@ -32,12 +32,12 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITableViewDe
         dateFormatter.timeZone = NSTimeZone() as TimeZone
 
         for currentLocation in locations{
-            var Date_time = DateFormatter.localizedString(from: NSDate() as Date,dateStyle:DateFormatter.Style.short,timeStyle:DateFormatter.Style.short)
+            let Date_time = DateFormatter.localizedString(from: NSDate() as Date,dateStyle:DateFormatter.Style.short,timeStyle:DateFormatter.Style.short)
             print (Date_time)
-            var Loc_Lat = String(format: "%.6f",currentLocation.coordinate.latitude)
-            var Loc_Lon = String(format: "%.6f",currentLocation.coordinate.longitude)
+            let Loc_Lat = String(format: "%.6f",currentLocation.coordinate.latitude)
+            let Loc_Lon = String(format: "%.6f",currentLocation.coordinate.longitude)
             print("\(index): \(currentLocation)")
-            var Msg = Date_time + ", " + Loc_Lat + ", " + Loc_Lon
+            let Msg = Date_time + ", " + Loc_Lat + ", " + Loc_Lon
             print (Msg)
             IncidentController.addIncident(newIncident: Msg)
             //Krishnan: This is needed for refresh
