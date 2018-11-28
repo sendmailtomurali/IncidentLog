@@ -10,12 +10,17 @@ import UIKit
 import CoreLocation
 import UserNotifications
 import CoreMotion
+import CallKit
 
 class ViewController: UIViewController, CLLocationManagerDelegate, UITableViewDelegate, UITableViewDataSource {
     
     let locDefaults = UserDefaults.standard
     let locationManager:CLLocationManager = CLLocationManager()
     let motionActivityManager = CMMotionActivityManager()
+    var Msg = "First"
+    var callObs : CXCallObserver!
+    var callObserver: CXCallObserver!
+    var call_active : Bool = false
     
     @IBOutlet weak var tableView: UITableView!
     
@@ -38,14 +43,29 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITableViewDe
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let dateFormatter = DateFormatter()
         dateFormatter.timeZone = NSTimeZone() as TimeZone
+        if CMMotionActivityManager.isActivityAvailable() {
+            motionActivityManager.startActivityUpdates(to: OperationQueue.main) { (motion) in
+                print("inside activity update true")
+                self.Msg = (motion?.automotive)! ? "Yes Driving\n" : "Not Driving\n"
+                self.Msg += (motion?.cycling)! ? "Yes Cycling\n" : "Not Cycling\n"
+                self.Msg += (motion?.running)! ? "Yes running\n" : "Not running\n"
+                self.Msg += (motion?.walking)! ? "Yes Walking\n" : "Not Walking\n"
+                self.Msg += (motion?.stationary)! ? "Yes stationary\n" : "Not stationary\n"
+                self.Msg += (motion?.unknown)! ? "Yes unknown\n" : "Not unknown\n"
+            }
+        }
+        else{
+            
+            self.Msg = "No Data Available"
+        }
 
         for currentLocation in locations{
             let Date_time = DateFormatter.localizedString(from: NSDate() as Date,dateStyle:DateFormatter.Style.short,timeStyle:DateFormatter.Style.short)
             let Loc_Lat = String(format: "%.6f",currentLocation.coordinate.latitude)
             let Loc_Lon = String(format: "%.6f",currentLocation.coordinate.longitude)
             print("\(index): \(currentLocation)")
-            let Act = Activity_Det()
-            let Msg = Date_time + ", " + Loc_Lat + ", " + Loc_Lon + "," + Act
+            Msg += Date_time + ", " + Loc_Lat + ", " + Loc_Lon
+            Msg += "\nCall:"+String(call_active)
             print (Msg)
             Notif(msgbody: "Update Received")
             IncidentController.addIncident(newIncident: Msg)
@@ -86,6 +106,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITableViewDe
     }
 }
 
+//Krishnan: Function writtent to notify user
 func Notif(msgbody: String){
     
     //Krishnan: Set the notification content
@@ -102,38 +123,22 @@ func Notif(msgbody: String){
     UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
 }
 
-func Activity_Det() -> String{
-    var stationaryLabel = "Initial"
-    var walkingLabel = "Initial"
-    var runningLabel = "Initial"
-    var automotiveLabel = "Initial"
-    var cyclingLabel = "Initial"
-    var unknownLabel = "Initial"
-    var startDateLabel = "Initial"
-    var confidenceLabel = "Initial"
-    
-    let motionActivityManager = CMMotionActivityManager()
-    let dateFormatter = DateFormatter()
-    dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-    if CMMotionActivityManager.isActivityAvailable() {
-        motionActivityManager.startActivityUpdates(to: OperationQueue.main) { (motion) in
-            var stationaryLabel = (motion?.stationary)! ? "True" : "False"
-            var walkingLabel = (motion?.walking)! ? "True" : "False"
-            var runningLabel = (motion?.running)! ? "True" : "False"
-            var automotiveLabel = (motion?.automotive)! ? "True" : "False"
-            var cyclingLabel = (motion?.cycling)! ? "True" : "False"
-            var unknownLabel = (motion?.unknown)! ? "True" : "False"
-            
-            var startDateLabel = dateFormatter.string(from: (motion?.startDate)!)
-            
-            if motion?.confidence == CMMotionActivityConfidence.low {
-                var confidenceLabel = "Low"
-            } else if motion?.confidence == CMMotionActivityConfidence.medium {
-                var confidenceLabel = "Good"
-            } else if motion?.confidence == CMMotionActivityConfidence.high {
-                var confidenceLabel = "High"
-            }
+extension ViewController: CXCallObserverDelegate {
+    func callObserver(_ callObserver: CXCallObserver, callChanged call: CXCall) {
+        if call.hasEnded == true {
+            print("Disconnected")
+            call_active = false
+        }
+        if call.isOutgoing == true && call.hasConnected == false {
+            print("Dialing")
+        }
+        if call.isOutgoing == false && call.hasConnected == false && call.hasEnded == false {
+            print("Incoming")
+        }
+        
+        if call.hasConnected == true && call.hasEnded == false {
+            print("Connected")
+            call_active = true
         }
     }
-    return(automotiveLabel)
 }
