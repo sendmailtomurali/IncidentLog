@@ -11,13 +11,21 @@ import UIKit
 class IncidentLogViewController: UIViewController {
 
     @IBOutlet weak var textField: UITextField!
-
+    @IBOutlet weak var lbl_Driving: UILabel!
+    @IBOutlet weak var lbl_Stationary: UILabel!
+    
+    var MyDriving = String()
+    var MyStationary = String()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
         // Do any additional setup after loading the view.
+        lbl_Driving.text = MyDriving
+        lbl_Stationary.text = MyStationary
     }
     
+
+
     @IBAction func saveIncident(_ sender: Any) {
         IncidentController.addIncident(newIncident: textField.text!)
         dismiss(animated: true, completion: nil)

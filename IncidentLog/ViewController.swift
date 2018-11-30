@@ -10,7 +10,7 @@ import UIKit
 import CoreLocation
 import UserNotifications
 import CoreMotion
-import CallKit
+//import CallKit
 
 class ViewController: UIViewController, CLLocationManagerDelegate, UITableViewDelegate, UITableViewDataSource {
     
@@ -18,11 +18,24 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITableViewDe
     let locationManager:CLLocationManager = CLLocationManager()
     let motionActivityManager = CMMotionActivityManager()
     var Msg = "First"
-    var callObs : CXCallObserver!
+    var Drv = "Dummy"
+    var Stn = "New"
+   /* var callObs : CXCallObserver!
     var callObserver: CXCallObserver!
-    var call_active : Bool = false
+    var call_active : Bool = false*/
+    @IBOutlet weak var Label: UILabel!
+    @IBOutlet weak var confidenceLabel: UILabel!
+    @IBAction func ScreenChg(_ sender: Any) {
+        performSegue(withIdentifier: "Segue", sender: self)
+    }
     
     @IBOutlet weak var tableView: UITableView!
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        var IncidentLogViewController = segue.destination as! IncidentLogViewController
+        IncidentLogViewController.MyDriving = Drv
+        IncidentLogViewController.MyStationary = Stn
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,12 +59,20 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITableViewDe
         if CMMotionActivityManager.isActivityAvailable() {
             motionActivityManager.startActivityUpdates(to: OperationQueue.main) { (motion) in
                 print("inside activity update true")
-                self.Msg = (motion?.automotive)! ? "Yes Driving\n" : "Not Driving\n"
+                self.Drv = (motion?.automotive)! ? "Yes Driving\n" : "Not Driving\n"
                 self.Msg += (motion?.cycling)! ? "Yes Cycling\n" : "Not Cycling\n"
                 self.Msg += (motion?.running)! ? "Yes running\n" : "Not running\n"
                 self.Msg += (motion?.walking)! ? "Yes Walking\n" : "Not Walking\n"
-                self.Msg += (motion?.stationary)! ? "Yes stationary\n" : "Not stationary\n"
+                self.Label.text = (motion?.stationary)! ? "Yes stationary\n" : "Not stationary\n"
                 self.Msg += (motion?.unknown)! ? "Yes unknown\n" : "Not unknown\n"
+                
+                if motion?.confidence == CMMotionActivityConfidence.low {
+                    self.confidenceLabel.text = "Low"
+                } else if motion?.confidence == CMMotionActivityConfidence.medium {
+                    self.confidenceLabel.text = "Good"
+                } else if motion?.confidence == CMMotionActivityConfidence.high {
+                    self.confidenceLabel.text = "High"
+                }
             }
         }
         else{
@@ -65,7 +86,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITableViewDe
             let Loc_Lon = String(format: "%.6f",currentLocation.coordinate.longitude)
             print("\(index): \(currentLocation)")
             Msg += Date_time + ", " + Loc_Lat + ", " + Loc_Lon
-            Msg += "\nCall:"+String(call_active)
+         //   Msg += "\nCall:"+String(call_active)
             print (Msg)
             Notif(msgbody: "Update Received")
             IncidentController.addIncident(newIncident: Msg)
@@ -105,7 +126,6 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITableViewDe
         return "Log Summary"
     }
 }
-
 //Krishnan: Function writtent to notify user
 func Notif(msgbody: String){
     
@@ -122,7 +142,7 @@ func Notif(msgbody: String){
     let request = UNNotificationRequest(identifier: "Possible Incidents", content: content, trigger: trigger)
     UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
 }
-
+/*
 extension ViewController: CXCallObserverDelegate {
     func callObserver(_ callObserver: CXCallObserver, callChanged call: CXCall) {
         if call.hasEnded == true {
@@ -142,3 +162,4 @@ extension ViewController: CXCallObserverDelegate {
         }
     }
 }
+*/
