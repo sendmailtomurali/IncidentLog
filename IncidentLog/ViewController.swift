@@ -10,7 +10,7 @@ import UIKit
 import CoreLocation
 import UserNotifications
 import CoreMotion
-//import CallKit
+import CallKit
 
 class ViewController: UIViewController, CLLocationManagerDelegate, UITableViewDelegate, UITableViewDataSource {
     
@@ -20,9 +20,11 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITableViewDe
     var Msg = "First"
     var Drv = "Dummy"
     var Stn = "New"
-   /* var callObs : CXCallObserver!
+    var Wlk = "New1"
+    var Unk = "Unknown"
+    var callObs : CXCallObserver!
     var callObserver: CXCallObserver!
-    var call_active : Bool = false*/
+    var call_active : Bool = false
     @IBOutlet weak var Label: UILabel!
     @IBOutlet weak var confidenceLabel: UILabel!
     @IBAction func ScreenChg(_ sender: Any) {
@@ -35,6 +37,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITableViewDe
         var IncidentLogViewController = segue.destination as! IncidentLogViewController
         IncidentLogViewController.MyDriving = Drv
         IncidentLogViewController.MyStationary = Stn
+        IncidentLogViewController.MyWalking = Wlk
+        IncidentLogViewController.MyUnknown = Unk
     }
     
     override func viewDidLoad() {
@@ -59,12 +63,18 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITableViewDe
         if CMMotionActivityManager.isActivityAvailable() {
             motionActivityManager.startActivityUpdates(to: OperationQueue.main) { (motion) in
                 print("inside activity update true")
+                self.Label.text = (motion?.automotive)! ? "Yes Driving\n" : "Not Driving\n"
+                self.Msg = (motion?.automotive)! ? "Yes Driving\n" : "Not Driving\n"
                 self.Drv = (motion?.automotive)! ? "Yes Driving\n" : "Not Driving\n"
                 self.Msg += (motion?.cycling)! ? "Yes Cycling\n" : "Not Cycling\n"
                 self.Msg += (motion?.running)! ? "Yes running\n" : "Not running\n"
                 self.Msg += (motion?.walking)! ? "Yes Walking\n" : "Not Walking\n"
-                self.Label.text = (motion?.stationary)! ? "Yes stationary\n" : "Not stationary\n"
+                self.Wlk = (motion?.walking)! ? "Yes Walking\n" : "Not Walking\n"
+                self.Msg += (motion?.stationary)! ? "Yes stationary\n" : "Not stationary\n"
+                self.Stn = (motion?.stationary)! ? "Yes stationary\n" : "Not stationary\n"
                 self.Msg += (motion?.unknown)! ? "Yes unknown\n" : "Not unknown\n"
+                self.Unk = (motion?.unknown)! ? "Yes unknown\n" : "Not unknown\n"
+
                 
                 if motion?.confidence == CMMotionActivityConfidence.low {
                     self.confidenceLabel.text = "Low"
@@ -142,12 +152,12 @@ func Notif(msgbody: String){
     let request = UNNotificationRequest(identifier: "Possible Incidents", content: content, trigger: trigger)
     UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
 }
-/*
+
 extension ViewController: CXCallObserverDelegate {
     func callObserver(_ callObserver: CXCallObserver, callChanged call: CXCall) {
         if call.hasEnded == true {
             print("Disconnected")
-            call_active = false
+            self.Label.text = "false"
         }
         if call.isOutgoing == true && call.hasConnected == false {
             print("Dialing")
@@ -158,8 +168,7 @@ extension ViewController: CXCallObserverDelegate {
         
         if call.hasConnected == true && call.hasEnded == false {
             print("Connected")
-            call_active = true
+            self.Label.text = "true"
         }
     }
 }
-*/

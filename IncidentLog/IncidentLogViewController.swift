@@ -13,15 +13,22 @@ class IncidentLogViewController: UIViewController {
     @IBOutlet weak var textField: UITextField!
     @IBOutlet weak var lbl_Driving: UILabel!
     @IBOutlet weak var lbl_Stationary: UILabel!
+    @IBOutlet weak var lbl_walking: UILabel!
+    @IBOutlet weak var lbl_unknown: UILabel!
+    
     
     var MyDriving = String()
     var MyStationary = String()
+    var MyWalking = String()
+    var MyUnknown = String()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         lbl_Driving.text = MyDriving
         lbl_Stationary.text = MyStationary
+        lbl_walking.text = MyWalking
+        lbl_unknown.text = MyUnknown
     }
     
 
