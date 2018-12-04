@@ -34,7 +34,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITableViewDe
     @IBOutlet weak var tableView: UITableView!
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        var IncidentLogViewController = segue.destination as! IncidentLogViewController
+        let IncidentLogViewController = segue.destination as! IncidentLogViewController
         IncidentLogViewController.MyDriving = Drv
         IncidentLogViewController.MyStationary = Stn
         IncidentLogViewController.MyWalking = Wlk
@@ -43,7 +43,6 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITableViewDe
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
         
         //Krishnan:Notification Parameters
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge], completionHandler: {didAllow, Error in})
@@ -55,8 +54,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITableViewDe
         self.locationManager.allowsBackgroundLocationUpdates = true
         self.locationManager.pausesLocationUpdatesAutomatically = false
         
-        self.sharedPref.setValue(false, forKey: "clstate")//flag for call state setting false as default
-    
+        self.sharedPref.setValue(false, forKey: "clstate")//flag for call state setting default:false
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -81,7 +79,6 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITableViewDe
                 self.Msg += (motion?.unknown)! ? "Yes unknown\n" : "Not unknown\n"
                 self.Unk = (motion?.unknown)! ? "Yes unknown\n" : "Not unknown\n"
 
-                
                 if motion?.confidence == CMMotionActivityConfidence.low {
                     self.confidenceLabel.text = "Low"
                 } else if motion?.confidence == CMMotionActivityConfidence.medium {
