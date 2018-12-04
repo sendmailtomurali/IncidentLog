@@ -15,6 +15,7 @@ import CallKit
 class ViewController: UIViewController, CLLocationManagerDelegate, UITableViewDelegate, UITableViewDataSource {
     
     let locDefaults = UserDefaults.standard
+    let sharedPref = UserDefaults.standard
     let locationManager:CLLocationManager = CLLocationManager()
     let motionActivityManager = CMMotionActivityManager()
     var Msg = "First"
@@ -24,7 +25,6 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITableViewDe
     var Unk = "Unknown"
     var callObs : CXCallObserver!
     var callObserver: CXCallObserver!
-    var call_active : Bool = false
     @IBOutlet weak var Label: UILabel!
     @IBOutlet weak var confidenceLabel: UILabel!
     @IBAction func ScreenChg(_ sender: Any) {
@@ -54,15 +54,21 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITableViewDe
         self.locationManager.startMonitoringSignificantLocationChanges()
         self.locationManager.allowsBackgroundLocationUpdates = true
         self.locationManager.pausesLocationUpdatesAutomatically = false
+        
+        self.sharedPref.setValue(false, forKey: "clstate")//flag for call state setting false as default
     
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        //starting call observer to check user is in call or not
+        self.callObs = CXCallObserver()
+        self.callObs.setDelegate(self as CXCallObserverDelegate, queue: nil)
+        print("monitoring calls")
+        
         let dateFormatter = DateFormatter()
         dateFormatter.timeZone = NSTimeZone() as TimeZone
         if CMMotionActivityManager.isActivityAvailable() {
             motionActivityManager.startActivityUpdates(to: OperationQueue.main) { (motion) in
-                print("inside activity update true")
                 self.Label.text = (motion?.automotive)! ? "Yes Driving\n" : "Not Driving\n"
                 self.Msg = (motion?.automotive)! ? "Yes Driving\n" : "Not Driving\n"
                 self.Drv = (motion?.automotive)! ? "Yes Driving\n" : "Not Driving\n"
@@ -96,7 +102,12 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITableViewDe
             let Loc_Lon = String(format: "%.6f",currentLocation.coordinate.longitude)
             print("\(index): \(currentLocation)")
             Msg += Date_time + ", " + Loc_Lat + ", " + Loc_Lon
-         //   Msg += "\nCall:"+String(call_active)
+            if self.sharedPref.bool(forKey: "clstate") == true {
+            Msg += "\nCall Active"
+            }
+            if self.sharedPref.bool(forKey: "clstate") == false {
+                Msg += "\nCall Inactive"
+            }
             print (Msg)
             Notif(msgbody: "Update Received")
             IncidentController.addIncident(newIncident: Msg)
@@ -157,7 +168,7 @@ extension ViewController: CXCallObserverDelegate {
     func callObserver(_ callObserver: CXCallObserver, callChanged call: CXCall) {
         if call.hasEnded == true {
             print("Disconnected")
-            self.Label.text = "false"
+            self.sharedPref.setValue(false, forKey: "clstate")
         }
         if call.isOutgoing == true && call.hasConnected == false {
             print("Dialing")
@@ -168,7 +179,7 @@ extension ViewController: CXCallObserverDelegate {
         
         if call.hasConnected == true && call.hasEnded == false {
             print("Connected")
-            self.Label.text = "true"
+            self.sharedPref.setValue(true, forKey: "clstate")
         }
     }
 }
