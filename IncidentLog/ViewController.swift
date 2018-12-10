@@ -23,6 +23,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITableViewDe
     var Stn = "New"
     var Wlk = "New1"
     var Unk = "Unknown"
+    var Confid = "New"
     var callObs : CXCallObserver!
     var callObserver: CXCallObserver!
     @IBOutlet weak var Label: UILabel!
@@ -67,7 +68,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITableViewDe
         dateFormatter.timeZone = NSTimeZone() as TimeZone
         if CMMotionActivityManager.isActivityAvailable() {
             motionActivityManager.startActivityUpdates(to: OperationQueue.main) { (motion) in
-                self.Label.text = (motion?.automotive)! ? "Yes Driving\n" : "Not Driving\n"
+                self.Label.text = (motion?.stationary)! ? "Stationary" : "Not Stationary"
                 self.Msg = (motion?.automotive)! ? "Yes Driving\n" : "Not Driving\n"
                 self.Drv = (motion?.automotive)! ? "Yes Driving\n" : "Not Driving\n"
                 self.Msg += (motion?.cycling)! ? "Yes Cycling\n" : "Not Cycling\n"
@@ -85,6 +86,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITableViewDe
                     self.confidenceLabel.text = "Good"
                 } else if motion?.confidence == CMMotionActivityConfidence.high {
                     self.confidenceLabel.text = "High"
+                    self.Confid = "High"
                 }
             }
         }
@@ -104,10 +106,14 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITableViewDe
             }
             if self.sharedPref.bool(forKey: "clstate") == false {
                 Msg += "\nCall Inactive"
+                if self.Stn == "Stationary"  && self.Confid == "High"{
+                    print("fire the first message")
+                    Notif(msgbody: "Stationary")
+                }
             }
             print (Msg)
-            sendtoserver(Lat: Loc_Lat, Lon: Loc_Lon, Message: Msg)
-            Notif(msgbody: "Update Received")
+     //       sendtoserver(Lat: Loc_Lat, Lon: Loc_Lon, Message: Msg)
+      //      Notif(msgbody: "Update Received")
             IncidentController.addIncident(newIncident: Msg)
             //Krishnan: This is needed for refresh
             tableView.reloadData()
@@ -123,6 +129,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITableViewDe
         super.didReceiveMemoryWarning()
         //Dispose of any resources that can be recreated
     }
+    
+    //Krishnan: TABLE VIEW SETUP
     //Krishnan: Set the number of sections in the tableview as 1
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
@@ -162,6 +170,7 @@ func Notif(msgbody: String){
     UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
 }
 
+//Krishnan:MONITOR FOR PHONE CALL STATUS
 extension ViewController: CXCallObserverDelegate {
     func callObserver(_ callObserver: CXCallObserver, callChanged call: CXCall) {
         if call.hasEnded == true {
@@ -182,9 +191,10 @@ extension ViewController: CXCallObserverDelegate {
     }
 }
 
+//Krishnan:SEND DATA TO SERVER
 func sendtoserver(Lat:String,Lon:String,Message: String){
     DispatchQueue.main.async(execute:{
-        let token = "'etunEpk-06U:APA91bHiohffPemYEb6ILjSgdRTxdT9jPSZ3UMIOIeq_MqBQS8KberiqUGKyJaofhMqdvFkhN1lEwiUnkbJ5byikqJStZ9krhKWtd5xkGqJb4CyaSjawXlePKg_QAYeYpwcbr6MNooTK'"
+        let token = "etunEpk-06U:APA91bHiohffPemYEb6ILjSgdRTxdT9jPSZ3UMIOIeq_MqBQS8KberiqUGKyJaofhMqdvFkhN1lEwiUnkbJ5byikqJStZ9krhKWtd5xkGqJb4CyaSjawXlePKg_QAYeYpwcbr6MNooTK"
         print(token)
         let auth = "JWT \(token)"
         let parameters = ["inc_lat": Lat,"inc_lng": Lon,"inc_speed":0.0,"inc_summary": Message,"inc_parent":1] as [String : Any]
