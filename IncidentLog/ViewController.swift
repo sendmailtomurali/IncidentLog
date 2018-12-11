@@ -12,7 +12,13 @@ import UserNotifications
 import CoreMotion
 import CallKit
 
-class ViewController: UIViewController, CLLocationManagerDelegate, UITableViewDelegate, UITableViewDataSource {
+class ViewController: UIViewController, CLLocationManagerDelegate, UITableViewDelegate {
+    
+    @IBOutlet weak var Driving_Label: UILabel!
+    @IBOutlet weak var Stationary_Label: UILabel!
+    @IBOutlet weak var Cycling_Label: UILabel!
+    @IBOutlet weak var confidenceLabel: UILabel!
+    @IBOutlet weak var CallState_Label: UILabel!
     
     let locDefaults = UserDefaults.standard
     let sharedPref = UserDefaults.standard
@@ -27,7 +33,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITableViewDe
     var callObs : CXCallObserver!
     var callObserver: CXCallObserver!
     @IBOutlet weak var Label: UILabel!
-    @IBOutlet weak var confidenceLabel: UILabel!
+    
     @IBAction func ScreenChg(_ sender: Any) {
         performSegue(withIdentifier: "Segue", sender: self)
     }
@@ -68,17 +74,18 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITableViewDe
         dateFormatter.timeZone = NSTimeZone() as TimeZone
         if CMMotionActivityManager.isActivityAvailable() {
             motionActivityManager.startActivityUpdates(to: OperationQueue.main) { (motion) in
-                self.Label.text = (motion?.stationary)! ? "Stationary" : "Not Stationary"
-                self.Msg = (motion?.automotive)! ? "Yes Driving\n" : "Not Driving\n"
+                self.Driving_Label.text = (motion?.automotive)! ? "Driving" : "Not Driving"
                 self.Drv = (motion?.automotive)! ? "Yes Driving\n" : "Not Driving\n"
-                self.Msg += (motion?.cycling)! ? "Yes Cycling\n" : "Not Cycling\n"
-                self.Msg += (motion?.running)! ? "Yes running\n" : "Not running\n"
-                self.Msg += (motion?.walking)! ? "Yes Walking\n" : "Not Walking\n"
-                self.Wlk = (motion?.walking)! ? "Yes Walking\n" : "Not Walking\n"
-                self.Msg += (motion?.stationary)! ? "Yes stationary\n" : "Not stationary\n"
-                self.Stn = (motion?.stationary)! ? "Yes stationary\n" : "Not stationary\n"
-                self.Msg += (motion?.unknown)! ? "Yes unknown\n" : "Not unknown\n"
-                self.Unk = (motion?.unknown)! ? "Yes unknown\n" : "Not unknown\n"
+                self.Cycling_Label.text = (motion?.cycling)! ? "Yes Cycling" : "Not Cycling"
+                self.Stationary_Label.text = (motion?.stationary)! ? "Yes stationary" : "Not stationary"
+                //self.Msg = (motion?.automotive)! ? "Yes Driving\n" : "Not Driving\n"
+                //self.Msg += (motion?.cycling)! ? "Yes Cycling\n" : "Not Cycling\n"
+                //self.Msg += (motion?.running)! ? "Yes running\n" : "Not running\n"
+                //self.Msg += (motion?.walking)! ? "Yes Walking\n" : "Not Walking\n"
+                //self.Wlk = (motion?.walking)! ? "Yes Walking\n" : "Not Walking\n"
+                //self.Msg += (motion?.stationary)! ? "Yes stationary\n" : "Not stationary\n"
+                //self.Msg += (motion?.unknown)! ? "Yes unknown\n" : "Not unknown\n"
+                //self.Unk = (motion?.unknown)! ? "Yes unknown\n" : "Not unknown\n"
 
                 if motion?.confidence == CMMotionActivityConfidence.low {
                     self.confidenceLabel.text = "Low"
@@ -100,36 +107,36 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITableViewDe
             let Loc_Lat = String(format: "%.6f",currentLocation.coordinate.latitude)
             let Loc_Lon = String(format: "%.6f",currentLocation.coordinate.longitude)
             print("\(index): \(currentLocation)")
-            Msg += Date_time + ", " + Loc_Lat + ", " + Loc_Lon
+            //Msg += Date_time + ", " + Loc_Lat + ", " + Loc_Lon
             if self.sharedPref.bool(forKey: "clstate") == true {
-            Msg += "\nCall Active"
+                if self.Stationary_Label.text == "Not stationary"  && self.confidenceLabel.text == "High"{
+                    Notif(msgbody: " Not Stationary and Call True")}
+          //  self.CallState_Label.text = "Call Active"
             }
             if self.sharedPref.bool(forKey: "clstate") == false {
-                Msg += "\nCall Inactive"
-                if self.Stn == "Stationary"  && self.Confid == "High"{
-                    print("fire the first message")
-                    Notif(msgbody: "Stationary")
+         //       self.CallState_Label.text = "Call Inactive"
+                if self.Stationary_Label.text == "Not stationary"  && self.confidenceLabel.text == "High"{
+                    Notif(msgbody: " Not Stationary and Call False")
                 }
             }
             print (Msg)
      //       sendtoserver(Lat: Loc_Lat, Lon: Loc_Lon, Message: Msg)
-      //      Notif(msgbody: "Update Received")
             IncidentController.addIncident(newIncident: Msg)
             //Krishnan: This is needed for refresh
-            tableView.reloadData()
+           // tableView.reloadData()
         }
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear( animated )
-        tableView.reloadData()
+        //tableView.reloadData()
 
     }
     override func   didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         //Dispose of any resources that can be recreated
     }
-    
+    /*
     //Krishnan: TABLE VIEW SETUP
     //Krishnan: Set the number of sections in the tableview as 1
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -151,7 +158,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITableViewDe
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         //Krishnan:Set the header text
         return "Log Summary"
-    }
+    }*/
 }
 //Krishnan: Function writtent to notify user
 func Notif(msgbody: String){
@@ -175,6 +182,7 @@ extension ViewController: CXCallObserverDelegate {
     func callObserver(_ callObserver: CXCallObserver, callChanged call: CXCall) {
         if call.hasEnded == true {
             print("Disconnected")
+            self.CallState_Label.text = "Call Inactive"
             self.sharedPref.setValue(false, forKey: "clstate")
         }
         if call.isOutgoing == true && call.hasConnected == false {
@@ -186,11 +194,12 @@ extension ViewController: CXCallObserverDelegate {
         
         if call.hasConnected == true && call.hasEnded == false {
             print("Connected")
+            self.CallState_Label.text = "Call Active"
             self.sharedPref.setValue(true, forKey: "clstate")
         }
     }
 }
-
+/*
 //Krishnan:SEND DATA TO SERVER
 func sendtoserver(Lat:String,Lon:String,Message: String){
     DispatchQueue.main.async(execute:{
@@ -232,3 +241,4 @@ func sendtoserver(Lat:String,Lon:String,Message: String){
     })
 }//token
 
+*/
