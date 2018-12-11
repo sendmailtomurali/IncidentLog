@@ -109,14 +109,12 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITableViewDe
             print("\(index): \(currentLocation)")
             //Msg += Date_time + ", " + Loc_Lat + ", " + Loc_Lon
             if self.sharedPref.bool(forKey: "clstate") == true {
-                if self.Stationary_Label.text == "Not stationary"  && self.confidenceLabel.text == "High"{
-                    Notif(msgbody: " Not Stationary and Call True")}
-          //  self.CallState_Label.text = "Call Active"
+                if self.Driving_Label.text == "Driving"  && self.confidenceLabel.text == "High"{
+                    Notif(msgbody: " Driving While Talking on phone")}
             }
             if self.sharedPref.bool(forKey: "clstate") == false {
-         //       self.CallState_Label.text = "Call Inactive"
-                if self.Stationary_Label.text == "Not stationary"  && self.confidenceLabel.text == "High"{
-                    Notif(msgbody: " Not Stationary and Call False")
+                if self.Driving_Label.text == "Not Driving"  && self.confidenceLabel.text == "High"{
+                    Notif(msgbody: " Not Driving and No active Call")
                 }
             }
             print (Msg)
