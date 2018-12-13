@@ -104,13 +104,16 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                     Notif(msgbody: " Driving While Talking on phone")}
             }
             if self.sharedPref.bool(forKey: "clstate") == false {
+                if self.Driving_Label.text == "Driving"  && self.confidenceLabel.text == "High"{
+                    Notif(msgbody: " Driving While No active Call")}
+            }
+            if self.sharedPref.bool(forKey: "clstate") == false {
                 if self.Driving_Label.text == "Not Driving"  && self.confidenceLabel.text == "High"{
                     Notif(msgbody: " Not Driving and No active Call")
                 }
             }
             IncidentController.addIncident(newIncident: Msg)
-            //Krishnan: This is needed for refresh
-           // tableView.reloadData()
+
         }
     }
     
@@ -125,7 +128,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     }
 
 }
-//Krishnan: Function writtent to notify user
+//Krishnan: Function written to notify user
 func Notif(msgbody: String){
     
     //Krishnan: Set the notification content
